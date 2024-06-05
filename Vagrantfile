@@ -7,6 +7,7 @@ Vagrant.configure("2") do |config|
    manager.vm.box = "generic/rocky9"
    manager.vm.hostname = "manager.local"
    manager.vm.network "private_network", ip: "192.168.95.110"
+   manager.vm.synced_folder ".", "/vagrant", disabled: false
    manager.vm.provider "virtualbox" do |v|
      v.name = "RHCE_manager"
      v.memory = 1024

@@ -10,4 +10,17 @@ All nodes will
 
 Manager host will
 * have ansible packages installed
- 
+* host project directoy mounted as synced folder to /vagrant dir - to share scripts and other files if needed
+
+## Status
+The current config is able to spin up a learning environement, also is able to destroy/reload or redo provisioning in an idempotent manner.
+Even though I am sure that it should be written to be more consistent and more automatic. 
+For example the **hosts** file provisioned to the VM-s should be automatically generated from the host-only IP addresses during **up** operation. Also the number of clients should be configurable.
+As far as I know, on the real exam you will have exactly two VM-s, thus it does not really matter.
+
+## Files structure
+* README.md - this file
+* Vagrantfile - the Vagrant config to spin up VM-s
+* provision - host setup script and ssh keys for ansible user
+* ansible - Ansible scripts and projects used along the learning path
+
