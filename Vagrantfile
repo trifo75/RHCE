@@ -8,6 +8,7 @@ Vagrant.configure("2") do |config|
    manager.vm.hostname = "manager.local"
    manager.vm.network "private_network", ip: "192.168.95.110"
    manager.vm.synced_folder ".", "/vagrant", disabled: false
+   manager.vm.network "forwarded_port", guest: 80, host: 8080
    manager.vm.provider "virtualbox" do |v|
      v.name = "RHCE_manager"
      v.memory = 1024
@@ -32,6 +33,27 @@ Vagrant.configure("2") do |config|
      su -c "ssh -o StrictHostKeyChecking=no client2 true" ansible
      su -c "ssh -o StrictHostKeyChecking=no client3 true" ansible
 SHELL
+
+   ### install httpd and get Ansible offline docs - as usable on the exam 
+   manager.vm.provision "shell", inline: <<-SHELL
+     # install git (for docs content) and apache
+     sudo dnf -y install git httpd
+
+     # enable http service in the firewall permanently - then reload config
+     sudo firewall-cmd --add-service=http --permanent
+     sudo firewall-cmd --reload
+
+     # enable and start httpd daemon
+     sudo systemctl enable --now  httpd
+
+     # empty out /var/www/html - make room for git clone
+     # then get contents and apply SELinux policy to be able to served
+     sudo rm -rf /var/www/html/*
+     sudo git clone  "https://github.com/aggressiveHiker/rhce9-docs-ansible" /var/www/html/
+     sudo restorecon -vR /var/www/html
+
+SHELL
+
 
   end # end vm.define
 

@@ -11,6 +11,7 @@ All nodes will
 Manager host will
 * have ansible packages installed
 * host project directoy mounted as synced folder to /vagrant dir - to share scripts and other files if needed
+* have a cloned copy ot Ansible documentation which is accessible on http://127.0.0.1:8080/latest/ - most probably the same way you can access docs during the exam 
 
 ## Status
 The current config is able to spin up a learning environement, also is able to destroy/reload or redo provisioning in an idempotent manner.
