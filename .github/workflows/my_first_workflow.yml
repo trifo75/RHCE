@@ -7,6 +7,19 @@ on:
   
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+    inputs:
+      var1:
+        type: boolean
+        description: Ez egy valtozo. Igen, vagy nem.
+        default: false
+      var2:
+        type: choice
+        description: Valassz ezekbol egyet
+        default: 'korte'
+        options:
+        - alma
+        - korte
+        - barack
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
