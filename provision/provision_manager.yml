@@ -28,6 +28,13 @@
         src: "/ansiblescripts/rhce_scripts"
         dest: "~ansible/rhce_scripts"
         state: link
+    - name: put default ansible.cfg to the homedir of ansible user
+      copy:
+        src: ansible.cfg
+        dest: "~ansible/.ansible.cfg"
+        owner: ansible
+        group: ansible
+        mode: 0750
 
   - name: |
       setting up software to server Ansible offline docs from manager node

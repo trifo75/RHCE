@@ -92,7 +92,6 @@ Vagrant.configure("2") do |config|
       if vm_def["hostname"] == "manager"
         machine.vm.provision "ansible_local", playbook: "provision/provision_manager.yml"
         machine.vm.network "forwarded_port", guest: 80, host: 8080
-        manager.vm.provision "file", source: "provision/ansible.cfg", destination: "~ansible/.ansible.cfg"
 
       end
 
