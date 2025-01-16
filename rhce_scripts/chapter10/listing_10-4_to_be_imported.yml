@@ -1,0 +1,12 @@
+---
+- name: play1 to be imported
+  hosts: all
+  tasks:
+  - debug:
+      msg: running a task from play1
+
+- name: play2 to be imported
+  hosts: all
+  tasks:
+  - debug:
+      msg: running another imported from play2

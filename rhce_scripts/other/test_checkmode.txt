@@ -1,0 +1,7 @@
+sattara
+mattara
+    shells = egyik,masik,harmadik,negyedik
+    
+    
+    
+file vege

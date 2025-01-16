@@ -1,0 +1,26 @@
+
+---
+- name: test /until/ expression
+  hosts: localhost
+  vars:
+    options:
+    - alma
+    - korte
+    - barack
+  vars_prompt:
+    name: user_input
+    prompt: "Choose wisely"
+    private: no
+  tasks:
+  - name: Try to get user input until user inputs correct answer
+    pause:
+      prompt: "Melyik legyen? ({{ options | join(', ') }})"
+      echo: yes
+    register: result
+    until: result['user_input'] in options
+    retries: 5
+    delay: 1
+  - name: show result
+    debug:
+      var: result
+

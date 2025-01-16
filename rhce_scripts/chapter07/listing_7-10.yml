@@ -1,0 +1,22 @@
+---
+- name: test if a variable is in another variables list
+  hosts: all
+  vars_prompt:
+  - name: my_answer
+    prompt: which package do you want to install
+    private: false
+    default: httpd
+  vars:
+    supported_packages:
+    - httpd
+    - ngnix
+  tasks:
+  - name: show working data
+    debug:
+      msg: "Your answer: {{ my_answer }} should be part of this list: {{ supported_packages }}"
+  - name: show result
+    debug:
+      msg: you are trying to install a supported package
+    when: my_answer in supported_packages
+
+

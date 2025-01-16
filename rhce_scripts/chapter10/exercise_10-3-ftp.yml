@@ -1,0 +1,26 @@
+- name: check if needed variables are present
+  assert:
+    that:
+    - packagename is defined
+    - servicename is defined
+    - firewalld_servicename is defined
+    success_msg: "All needed variables are present"
+    fail_msg: |
+      We need the following vars to be set:
+      packagenamer: the name to be installed - should be recognized by yum
+      servicename: the name to be passed to service: module to start
+      firewalld_servicename: the name of the firewall service to open the port
+- name: install {{ packagename }}
+  yum:
+    name: "{{ packagename }}"
+    state: latest
+- name: start and enable {{ servicename }}
+  service:
+    name: "{{ servicename }}"
+    state: started
+    enabled: true
+- name: open the firewall for the service
+  firewalld:
+    service: "{{ firewalld_servicename }}"
+    permanent: yes
+    state: enabled

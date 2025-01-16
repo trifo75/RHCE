@@ -1,0 +1,30 @@
+
+---
+- name: get vars from host_vars and group_vars
+  hosts: appservers
+  tasks:
+  - name: display group var for appservers
+    debug:
+      var: web_package
+  - name: display group_var for group all
+    debug:
+      var: mindenki
+
+- name: get host_vars again
+  hosts: dbservers
+  tasks: 
+  - name: display group var for dbservers 
+    debug:
+      var: db_package
+  - name: display group_var for group all
+    debug:
+      var: mindenki
+
+- name: testing if group -all- can be used for group vars
+  hosts: all
+  tasks:
+  - name: display group_var for group all
+    debug:
+      var: mindenki
+
+

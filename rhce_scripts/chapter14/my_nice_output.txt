@@ -1,0 +1,6 @@
+client1: my hostname is client1.local
+plusz egy sor
+client2: my hostname is client2.local
+plusz egy sor
+client3: my hostname is client3.local
+plusz egy sor

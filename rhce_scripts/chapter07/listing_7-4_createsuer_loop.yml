@@ -1,0 +1,15 @@
+
+---
+- name: Creating users using a loop from a list
+  hosts: client2
+  vars_files: vars/listing_7-3_users
+  tasks:
+  - name: create users
+    user:
+      name: "{{ item.username }}"
+      state: present
+      groups: "{{ item.groups }}"
+      home: "{{ item.homedir }}"
+      shell: "{{ item.shell }}"
+    loop: "{{ users }}"
+

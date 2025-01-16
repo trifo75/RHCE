@@ -1,0 +1,14 @@
+
+---
+- name: Demonstrate change status with changed_when
+  hosts: all
+  tasks:
+  - name: check local time
+    command: date
+    register: command_result
+    changed_when: false     # NEVER show result as CHANGED
+  - name: print local time
+    debug:
+      var: command_result.stdout[17:19] | int > 30
+
+

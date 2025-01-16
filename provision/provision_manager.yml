@@ -1,0 +1,87 @@
+---
+- name: provisioning manager host by Vagrant ansible-local - create extra mountfor the RHCE scripts
+  become: true
+  hosts: all
+  tasks:
+  - name: |
+      prepare and configure mount of scripts folder from Vagrant dir for ansible user
+      we mount the default "vagrant" vboxsf fevice again with ansible owner and proper modes
+      to be able to user ansible.cfg from within it (Ansible won't accept an ansible.cfg from
+      a world-writeable directory)
+
+    block:
+    - name: create the mountpoint
+      file:
+        path: /ansiblescripts
+        owner: ansible
+        group: ansible
+        state: directory
+    - name: do the mount
+      mount:
+        path: /ansiblescripts
+        src: vagrant
+        fstype: vboxsf
+        opts: uid=ansible,gid=ansible,fmode=660,dmode=770,_netdev
+        state: mounted
+    - name: create a link in the Ansible user dir to the scripts subfolder
+      file:
+        src: "/ansiblescripts/rhce_scripts"
+        dest: "~ansible/rhce_scripts"
+        state: link
+
+  - name: |
+      setting up software to server Ansible offline docs from manager node
+      using content from AggressiveHiker's GIT repo
+
+    block:
+    - name: install httpd and git
+      package:
+        name: "{{ item }}"
+        state: present
+      with_items:
+      - httpd
+      - git
+    - name: start and enable httpd
+      service:
+        name: httpd
+        state: started
+        enabled: true
+    - name: let http taffic through firewall
+      firewalld:
+        service: http
+        state: enabled
+        immediate: true
+        permanent: true
+    - name: empty out /var/www/html
+      file:
+        name: /var/www/html/latest
+        state: absent
+    - name: clone stuff from aggressiveHiker/rhce9-docs-ansible
+      git:
+        repo: 'https://github.com/aggressiveHiker/rhce9-docs-ansible'
+        dest: /var/www/html
+        force: true
+    - name: relabel /var/www/html
+      command: "restorecon -rv /var/www/html"
+
+
+
+#   
+#      ### install httpd and get Ansible offline docs - as usable on the exam 
+#      manager.vm.provision "shell", inline: <<-SHELL
+#        # install git (for docs content) and apache
+#        sudo dnf -y install git httpd
+#   
+#        # enable http service in the firewall permanently - then reload config
+#        sudo firewall-cmd --add-service=http --permanent
+#        sudo firewall-cmd --reload
+#   
+#        # enable and start httpd daemon
+#        sudo systemctl enable --now  httpd
+#   
+#        # empty out /var/www/html - make room for git clone
+#        # then get contents and apply SELinux policy to be able to served
+#        sudo rm -rf /var/www/html/*
+#        sudo git clone  "https://github.com/aggressiveHiker/rhce9-docs-ansible" /var/www/html/
+#        sudo restorecon -vR /var/www/html
+#

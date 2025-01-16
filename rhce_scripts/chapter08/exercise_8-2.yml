@@ -1,0 +1,66 @@
+
+---
+- name: Managing webserver selinux properties
+  hosts: client1
+  tasks:
+  - name: Install webserver software
+    yum:
+      name: httpd
+      state: latest
+  - name: Enable & start httpd
+    service:
+      name: httpd
+      state: started
+      enabled: true
+  - name: Enable http traffic on firewall permanently
+    firewalld:
+      service: http
+      state: enabled
+      permanent: true
+      immediate: true
+  - name: create custom web root directory
+    file:
+      name: /web
+      state: directory
+  - name: set SELinux to enforce targeted policy
+    selinux:
+      state: enforcing
+      policy: targeted
+  - name: set fcontext to custom web root dir
+    sefcontext:
+      target: '/web(/.*)?'
+      setype: httpd_sys_content_t
+      state: present
+    notify: run restorecon
+  - name: set seboolean to enable httpd user content
+    seboolean:
+      name: httpd_read_user_content
+      state: on
+      persistent: yes
+  - name: create index.html to the new webroot with custom content
+    copy:
+      dest: /web/index.html
+      content: "Welcome to exercise 8.2 webserver"
+  - name: use lineinfile to change documentroot in httpd.conf    handler to restart
+    lineinfile:
+      path: /etc/httpd/conf/httpd.conf
+      regexp: '^DocumentRoot'
+      line: 'DocumentRoot "/web"'
+    notify: restart httpd
+  - name: use lineinfile to change documentroot in httpd.conf    handler to restart
+    lineinfile:
+      path: /etc/httpd/conf/httpd.conf
+      regexp: '^<Directory "/var/www">'
+      line: '<Directory "/web">'
+    notify: restart httpd
+        
+      
+  handlers:
+  - name: restart httpd
+    service:
+      name: httpd
+      state: restarted
+  - name: run restorecon
+    command: restorecon -rv /web
+
+

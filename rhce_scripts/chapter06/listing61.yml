@@ -1,0 +1,11 @@
+
+---
+- name: Create a user using variable
+  hosts: client1
+  vars:
+    users: lisa
+  tasks:
+    - name: create a user {{ users }} on host {{ ansible_hostname }}
+      user:
+        name: "{{ users }}"
+

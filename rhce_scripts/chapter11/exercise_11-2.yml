@@ -1,0 +1,23 @@
+---
+- name: using assert to test volume groups vgdata exists
+  hosts: all
+  vars:
+    vgname: rl_rocky9
+      #vgname: vgdata   # ha ez lenne ott, akkor hibara futna az assert
+  tasks:
+  - name: check if vgdata exists
+    command: vgs {{ vgname }}
+    register: vg_result
+    ignore_errors: yes
+  - name: print vg_result variable
+    debug:
+      var: vg_result
+  - name: print check result
+    assert:
+      that:
+      - vg_result.rc == 0
+      fail_msg: "{{ vgname }} volume group does not exist"
+      success_msg: "{{ vgname }} volume group has been found"
+
+
+

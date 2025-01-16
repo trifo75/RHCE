@@ -1,0 +1,29 @@
+
+---
+- name: testing the behavior of check_mode option
+  hosts: localhost
+  vars:
+    searchstr: "/usr/bin/bash"
+    logincfgfile: "{{ playbook_dir }}/login.cfg"
+  become: no
+  tasks:
+  - name: check if line is present
+    lineinfile:
+      path: "{{ logincfgfile }}"
+      regex: "shells = .*{{ searchstr }}.*"
+      state: absent
+    check_mode: yes
+    register: entrypresent
+  - name: add shell entry if it was not present
+    lineinfile:
+      backrefs: yes
+      path: "{{ logincfgfile }}"
+      regex: "(?P<shellsline> *shells = .*)"
+      line: '\g<shellsline>,{{ searchstr }}'
+    when: entrypresent.found == 0
+
+
+
+
+
+

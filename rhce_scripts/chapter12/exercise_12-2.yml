@@ -1,0 +1,77 @@
+---
+- name: install, configure and start FTP on manager
+  hosts: localhost
+  tasks:
+  - name: install FTP server
+    yum:
+      name: vsftpd
+      state: latest
+  - name: allow anonymous access to FTP
+    lineinfile:
+      path: /etc/vsftpd/vsftpd.conf
+      regexp: '^anonymous_enable=NO'
+      line: 'anonymous_enable=YES'
+  - name: start and enable FTP server
+    service:
+      name: vsftpd
+      state: restarted
+      enabled: true
+  - name: open firewall for FTP
+    firewalld:
+      service: ftp
+      state: enabled
+      immediate: yes
+      permanent: yes
+
+- name: setup the repo directory on manager
+  hosts: localhost
+  tasks:
+  - name: make the directory
+    file:
+      path: /var/ftp/repo
+      state: directory
+  - name: download packages
+    yum:
+      name:
+      - nmap
+      download_only: yes
+      download_dir: /var/ftp/repo
+  - name: make sure createrepo tool is available
+    yum:
+      name: createrepo_c
+      state: present
+  - name: Create the repo with createrepo on the repo dir 
+    command: createrepo /var/ftp/repo
+    notify: restart_ftp
+
+  handlers:
+  - name: restart_ftp
+    service:
+      name: vsftpd
+      state: restarted
+
+- name: configure custom repository access on clients
+  hosts: all
+  vars:
+    my_package: nmap
+  tasks:
+  - name: connect to the repo just created on manager
+    yum_repository:
+      name: exercise_12-2
+      description: RHCE8 exercise 12.2 repo
+      baseurl: ftp://manager/repo/
+      gpgcheck: no
+      enabled: yes
+  - name: install package
+    yum:
+      name: "{{ my_package }}"
+      state: present
+      enablerepo: exercise_12-2
+  - name: update package facts
+    package_facts:
+      manager: auto
+  - name: show package facts for {{ my_package }}
+    debug:
+      var: ansible_facts.packages[my_package]
+    when: my_package in ansible_facts.packages
+

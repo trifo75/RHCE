@@ -1,0 +1,30 @@
+---
+- name: |
+    .
+      _____ _ _ _            _               _ _     _       
+     |  ___(_) | |_ ___ _ __(_)_ __   __ _  | (_)___| |_ ___ 
+     | |_  | | | __/ _ \ '__| | '_ \ / _` | | | / __| __/ __|
+     |  _| | | | ||  __/ |  | | | | | (_| | | | \__ \ |_\__ \
+     |_|   |_|_|\__\___|_|  |_|_| |_|\__, | |_|_|___/\__|___/
+                                     |___/                   
+    Testing list filter
+    using the difference of two lists
+    and then joining the result into a comma separated list
+    .
+  gather_facts: false
+  hosts: localhost
+  vars:
+    list1:
+    - egy
+    - ketto
+    - harom
+    - negy
+    - ot
+    - hat
+    list2:
+    - egy
+    - harom
+  tasks:
+  - name: handle list
+    debug:
+      msg: "{{ list1 | difference(list2) | join(', ') }}"

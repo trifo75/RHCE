@@ -1,0 +1,6 @@
+---
+- name: install nginx using ansible role
+  hosts: client3
+  roles:
+  - geerlingguy.nginx
+

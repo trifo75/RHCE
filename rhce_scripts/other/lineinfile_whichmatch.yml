@@ -1,0 +1,46 @@
+
+# testing backrefs: option
+---
+- name: testing backrefs option
+  hosts: localhost
+  vars:
+    text: |
+      --------------
+      the first match
+      this won't fit
+      the second match
+      no fit here
+      the third match
+      no fit again
+    file: /tmp/regextext.txt
+    file_nobackrefs: /tmp/regextext_nobackrefs.txt
+  tasks:
+
+  - name: create test file for lineinfile
+    copy:
+      content: '{{ text }}'
+      dest: "{{ file }}"
+  - name: testing backrefs with lineinfile module
+    lineinfile:
+      regexp: '^(the \w+ match)$'
+      line: 'THIS IS \1'
+      path: "{{ file }}"
+      backrefs: yes
+      firstmatch: yes
+
+  - name: create test file for lineinfile without backrefs
+    copy:
+      content: '{{ text }}'
+      dest: "{{ file_nobackrefs }}"
+  - name: testing lineinfile module WITHOUT backrefs
+    lineinfile:
+      regexp: '^the \w+ match$'
+      line: 'REPLACE TO THIS'
+      path: "{{ file_nobackrefs }}"
+      backrefs: no
+
+  - debug:
+      msg: "To show result, run     cat {{ file }} and    cat {{ file_nobackrefs }}  "
+
+
+

@@ -1,0 +1,15 @@
+---
+- name: playing with service facts module
+  hosts: client1
+  tasks:
+  - name: collect service facts
+    service_facts:
+  - name: show service facts
+#        name: {{ service.key }}  status: {{ service.value.status }}
+    debug:
+      msg: |
+        {% for service in ansible_facts.services %}
+        {{ ansible_facts.services[service]['name'] }}     --->     {{ ansible_facts.services[service]['state'] }}
+        {% endfor %}
+
+

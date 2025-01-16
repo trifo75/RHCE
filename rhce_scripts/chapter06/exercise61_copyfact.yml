@@ -1,0 +1,15 @@
+
+---
+- name: Deploy custom facts for exercise 6.1
+  hosts: client2
+  tasks:
+    - name: create custom facts directory
+      file:
+        state: directory
+        recurse: yes
+        path: /etc/ansible/facts.d
+    - name: deploy custom facts
+      copy:
+        src: exercise61_facts.fact
+        dest: /etc/ansible/facts.d/exercise61.fact
+

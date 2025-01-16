@@ -1,0 +1,15 @@
+
+---
+- name: show list and dict type vars
+  hosts: client1
+  vars_files:
+  - vars/userdefs
+  tasks:
+  - name: print dict values
+    debug:
+      var: users_dict
+  - name: print list values
+    debug:
+      var: users_list
+
+

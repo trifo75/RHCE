@@ -1,0 +1,27 @@
+---
+- name: testing diff mode with inline templating
+  become: no
+  gather_facts: yes
+  hosts: all
+  vars:
+    templ: |
+      This is a file by template on {{ inventory_hostname }}
+      Also known by name {{ ansible_facts.hostname }}
+  tasks:
+  - name: create template file
+    copy:
+      content: "{{ templ }}"
+      dest: /tmp/template
+    check_mode: no
+    delegate_to: localhost
+  - name: use templating
+    template:
+      src: /tmp/template
+      dest: /tmp/teplate_out.txt
+  - name: delete template file
+    file:
+      path: /tmp/template
+      state: absent
+    check_mode: no
+    delegate_to: localhost
+

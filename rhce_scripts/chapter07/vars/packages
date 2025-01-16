@@ -1,0 +1,8 @@
+packages:
+- name: httpd
+  state: absent
+- name: vsftpd
+  state: installed
+- name: mariadb-server
+  state: latest
+

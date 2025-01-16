@@ -1,0 +1,25 @@
+---
+- name: using tags - examle
+  hosts: all
+  vars:
+    services:
+    - vsftpd
+    - httpd
+  tasks:
+  - name: install packages
+    yum:
+      name:
+      - httpd
+      - vsftpd
+      state: present
+    tags:
+    - install
+  - name: start and enable services
+    service:
+      name: "{{ item }}"
+      state: started
+      enabled: true
+    loop: "{{ services }}"
+    tags:
+    - services
+

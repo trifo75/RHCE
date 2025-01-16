@@ -1,0 +1,13 @@
+---
+- name: |
+    Setting up a new repo file on the clients
+    same params as found in normal repo files
+  hosts: all
+  tasks:
+  - name: connect to example repo
+    yum_repository:
+      name: example repo
+      description: RHCE8 example repo
+      file: examplerepo
+      baseurl: ftp://manager/repo
+      gpgcheck: no

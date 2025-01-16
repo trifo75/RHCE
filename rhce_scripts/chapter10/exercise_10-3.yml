@@ -1,0 +1,9 @@
+--- # Exercise playbook 10.3
+- name: install vsftps on client3
+  vars_files: exercise_10-3-vars.yml
+  hosts: client3
+  tasks:
+  - name: install and enable vsftpd
+    import_tasks: exercise_10-3-ftp.yml
+  - name: copy README file
+    import_tasks: exercise_10-3-copy.yml

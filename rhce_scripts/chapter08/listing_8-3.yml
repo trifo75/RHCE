@@ -1,0 +1,19 @@
+
+---
+- name: stat module tests
+  hosts: client2
+  tasks:
+  - command: touch /tmp/statfile
+  - name: stat stuff
+    stat:
+      path: /tmp/statfile
+    register: st
+  - name: show current values
+    debug:
+      msg: curretnt value of st vatiable is {{ st }}
+  - fail:
+      msg: "Unexpected file mode, should be set to 0640"
+    when: st.stat.mode != '0640'
+
+
+

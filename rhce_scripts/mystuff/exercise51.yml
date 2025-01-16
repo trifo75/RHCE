@@ -1,0 +1,14 @@
+---
+- name: install and start the vsftpd service
+  hosts: all
+  tasks:
+  - name: install vsftpd
+    package:
+      name: vsftpd
+      state: latest
+  - name: start and enable vsftpd
+    service:
+      name: vsftpd
+      state: started
+      enabled: yes
+

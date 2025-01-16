@@ -1,0 +1,2 @@
+This is a file by template on localhost
+Also known by name manager

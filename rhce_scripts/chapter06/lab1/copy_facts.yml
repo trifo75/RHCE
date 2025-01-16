@@ -1,0 +1,17 @@
+
+---
+- name: copy facts
+  hosts: all
+  vars:
+    remote_dir: /etc/ansible/facts.d
+    facts_file: facts/
+  tasks:
+    - name: ensure custom facts directory exists
+      file:
+        path: "{{ remote_dir }}"
+        state: directory
+    - name: put custom facts to target dir
+      copy:
+        src: "{{ facts_file }}"
+        dest: "{{ remote_dir }}"
+

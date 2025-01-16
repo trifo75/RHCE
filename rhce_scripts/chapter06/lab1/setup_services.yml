@@ -1,0 +1,87 @@
+
+---
+- name: Setting up file and web services using custom facts and included vars
+  hosts: all
+  vars_files:
+    -  allvars.yaml
+  tasks:
+    - name: list defined services
+      debug:
+        var: ansible_facts['ansible_local']['lab6.1.services']['services']
+    - name: list defined packages
+      debug:
+        var: ansible_facts['ansible_local']['lab6.1.packages']['packages']
+
+    - name: install SMB
+      package:
+        name: "{{ ansible_facts['ansible_local']['lab6.1.packages']['packages']['smb_package'] }}"
+        state: latest
+    - name: install VSFTPD
+      package:
+        name: "{{ ansible_facts['ansible_local']['lab6.1.packages']['packages']['ftp_package'] }}"
+        state: latest
+    - name: install MARIADB
+      package:
+        name: "{{ ansible_facts['ansible_local']['lab6.1.packages']['packages']['db_package'] }}"
+        state: latest
+    - name: install HTTPD
+      package:
+        name: "{{ ansible_facts['ansible_local']['lab6.1.packages']['packages']['web_package'] }}"
+        state: latest
+    - name: install FIREWALLD
+      package:
+        name: "{{ ansible_facts['ansible_local']['lab6.1.packages']['packages']['firewall_package'] }}"
+        state: latest
+
+    - name: start and enable SMB
+      service:
+        name: "{{ ansible_facts['ansible_local']['lab6.1.services']['services']['smb_service'] }}"
+        state: started
+        enabled: true
+    - name: start and enable FTP
+      service:
+        name: "{{ ansible_facts['ansible_local']['lab6.1.services']['services']['ftp_service'] }}"
+        state: started
+        enabled: true
+    - name: start and enable MARIADB
+      service:
+        name: "{{ ansible_facts['ansible_local']['lab6.1.services']['services']['db_service'] }}"
+        state: started
+        enabled: true
+    - name: start and enable HTTPD
+      service:
+        name: "{{ ansible_facts['ansible_local']['lab6.1.services']['services']['web_service'] }}"
+        state: started
+        enabled: true
+    - name: start and enable FIREWALLD
+      service:
+        name: "{{ ansible_facts['ansible_local']['lab6.1.services']['services']['firewall_service'] }}"
+        state: started
+        enabled: true
+
+    - name: enable http traffic
+      ansible.posix.firewalld:
+        service: http
+        permanent: true
+        state: enabled
+
+    - name: create index.html
+      copy:
+        content: "Welcome to the ansible Web Server"
+        dest: "{{ web_root }}/index.html"
+
+#[packages]
+#smb_package = samba
+#ftp_package = vsftpd
+#db_package = mariadb-server
+#web_package = httpd
+#firewall_package = firewalld
+
+#[services]
+#smb_service = smb
+#ftp_service = vsftpd
+#db_service = mariadb
+#web_service = httpd
+#firewall_service = firewalld
+
+

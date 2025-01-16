@@ -1,0 +1,6 @@
+---
+- name: use the -motd- custom role in a playbook
+  hosts: client2
+  roles:
+  - {role: motd, system_manager: nefelejcs@emlek.com }
+

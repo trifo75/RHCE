@@ -1,0 +1,28 @@
+
+---
+- name: show selinux
+  hosts: all
+  tasks:
+  - name: install package required for SELinux management
+    yum:
+      name: policycoreutils-python-utils
+      state: present
+  - name: create testfile
+    file:
+      name: /tmp/selinux
+      state: touch
+  - name: set SELinux context
+    sefcontext:
+      target: /tmp/selinux
+      setype: httpd_sys_content_t
+      state: present
+    notify:
+    - run restorecon
+  # azert kell a handler, mert csak akkor kell fusson, ha a vonatkozo task statusza "CHANGED"
+  # ha nem volt valtozas, akkor nem kell a restorecon se.
+  #
+  handlers:
+  - name: run restorecon
+    command: restorecon -v /tmp/selinux
+
+

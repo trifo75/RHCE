@@ -1,0 +1,45 @@
+---
+- name: test ping mdule
+  hosts: all
+  vars:
+    qqq: ququriquuu
+    pingresult:
+      client1: ping
+      client2: crash
+      client3: macskaalom
+  tasks:
+  - name: Show explanation
+    run_once: true
+    debug:
+      msg: |
+        This playbook sets a variable then uses the key-value pairs 
+        to call ping module. One of the clients will get data="crash"
+        which causes ping module to return an exception, called "boom"
+  - name: Show the pingresult variable for debugging
+    debug:
+      var: pingresult
+    delegate_to: localhost
+    run_once: true
+    tags:
+    - debug
+    - never
+
+  - name: do some ping
+    ping:
+      data: "{{ pingresult[inventory_hostname] }}"
+    ignore_errors: yes
+    register: pingout
+  - name: Show pingout variable for debugging
+    debug:
+      var: pingout
+    tags:
+    - debug
+    - never
+  - name: show what happened
+    debug:
+      msg: >
+        {{ pingout.failed | ternary("ping failed", "ping succeeded") }}
+        {{ pingout.ping is defined | ternary( pingout.ping, "Received nothing") }}
+#        {{ inventory_hostname }} received ping message {{ pingresult[inventory_hostname] }} 
+#        and did return with {{ pingout.failed | ternary( 'failure', 'success' )}}. 
+#        The host {{ pingout.ping is defined | ternary( ' '.join(('did result', pingout.ping)), 'did not result anything because of failure' ) }}

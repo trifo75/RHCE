@@ -1,0 +1,17 @@
+
+#other[1:6]
+
+[clnt]
+client1
+client2
+client3
+
+#[svr]
+#serva
+#servb
+#servc
+#asrv
+#bsrv
+#csrv
+
+

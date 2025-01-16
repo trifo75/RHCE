@@ -1,0 +1,28 @@
+---
+# tasks file for writeafile
+- name: put content to {{ file_path }}
+  copy:
+    content: "{{ file_content }}"
+    dest: "{{ file_path }}"
+  notify:
+  - create file checksum
+- name: set {{ file_path }} to given properties
+  file:
+    state: touch 
+    dest: "{{ file_path }}"
+    mode: "{{ file_mode }}"
+    owner: "{{ file_owner }}"
+    mode: "{{ file_mode }}"
+- name: get file properties
+  shell: "ls -l {{ file_path }}"
+  register: fileprops
+- name: show file properties
+  debug:
+    var: fileprops.stdout
+- name: get file content
+  shell: "cat {{ file_path }}"
+  register: filecont
+- name: show file content
+  debug:
+    var: filecont.stdout
+    

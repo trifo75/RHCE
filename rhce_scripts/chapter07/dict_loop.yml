@@ -1,0 +1,12 @@
+
+---
+- name: testing looping through dict
+  hosts: client3
+  vars_files: vars/users_dict
+  tasks:
+  - name: create users by dict
+    debug:
+      msg: "{{ item.key }} --> {{ item.value.username }} / {{ item['value']['homedir'] }}"
+    with_dict: "{{ users_dict }}"
+
+

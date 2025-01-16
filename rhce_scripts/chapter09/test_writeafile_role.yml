@@ -1,0 +1,12 @@
+---
+- name: testing my first own role - writeafile
+  hosts: client3
+  roles:
+  - role: writeafile
+    file_path: trifo_file
+  - role: writeafile
+    file_path: masik_file
+    file_owner: ansible
+
+
+

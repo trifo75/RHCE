@@ -1,0 +1,25 @@
+
+---
+- name: modifying file
+  hosts: all
+  tasks:
+  - name: ensure /tmp/hosts exists
+    file:
+      path: /tmp/hosts
+      state: touch   # works like touch command: creates file OR updates access time
+  - name: add some lines to /tmp/hosts
+    blockinfile:
+      path: /tmp/hosts
+      block: |
+        192.168.4.110 host1.example.com
+        192.168.4.130 host2.example.com
+      state: present
+  - name: add some lines to /tmp/hosts
+    blockinfile:
+      path: /tmp/hosts
+      block: |
+        192.168.4.150 host5.example.com
+        192.168.4.170 host7.example.com
+      state: present
+      marker: '# {mark} OTHER ANSIBLE MANAGED BLOCK' # to put another block in the same file, you have to use different block marker
+

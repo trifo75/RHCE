@@ -1,0 +1,8 @@
+
+---
+- name: get host vars
+  hosts: client2
+  tasks:
+  - name: show vars
+    debug:
+      var: hostvars

@@ -1,0 +1,53 @@
+
+---
+- name: testing file manipulation shills
+  hosts: client3
+  vars:
+    testfile: /tmp/newfile
+  tasks:
+  - name: create a new empty file
+    file:
+      path: "{{ testfile }}"
+      state: touch
+  - name: check the status of the new file
+    stat:
+      path: "{{ testfile }}"
+    register: filestat
+  - name: for debugging only, show result
+    debug:
+      msg: |
+        The current values of {{ testfile }} are
+        {{ filestat }}
+  - name: edit file owner of {{ testfile }}
+    file:
+      path: "{{ testfile }}"
+      owner: ansible
+    when: filestat.stat.pw_name != 'ansible'
+
+- name: fetching remote file
+  hosts: client3
+  tasks:
+  - name: fetch file from remote machine
+    fetch:
+      src: /etc/motd
+      dest: /tmp
+
+- name: edit fetched file locally
+  hosts: localhost
+  tasks:
+  - name: add a message
+    blockinfile:
+      path: /tmp/client3/etc/motd
+      block: |
+        welcome to this server
+        for authorized users only
+      state: present
+
+- name: copy modified file 
+  hosts: client2
+  tasks:
+  - name: copy motd file
+    copy:
+      src: /tmp/client3/etc/motd
+      dest: /tmp
+ 

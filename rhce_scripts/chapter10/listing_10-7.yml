@@ -1,0 +1,12 @@
+# to be used with   include_tasks:   
+- name: install {{ package }}
+  yum:
+    name: "{{ package }}"
+    state: latest
+- name: start {{ service }}
+  service:
+    name: "{{ service }}"
+    state: started
+    enabled: true
+
+

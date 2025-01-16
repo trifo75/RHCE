@@ -1,0 +1,9 @@
+#---
+#- name: run a task
+- hosts: all
+  tasks:
+  - debug:
+      msg: running a task from the original playbook
+
+- name: importing a playbook
+  import_playbook: listing_10-4_to_be_imported.yml

@@ -1,0 +1,26 @@
+---
+- name: remove non default repositories by differences of lists
+  hosts: all
+  vars:
+    keeprepos:
+    - appstream
+    - baseos
+    - epel
+    - extras
+  tasks:
+  - name: collect repo ID-s
+    shell: "yum repolist | tail -n+2 | cut -d' ' -f1"
+    register: repos
+  - name: show repos to delete
+    debug:
+      msg: "{{ repos.stdout_lines | difference(keeprepos) }}"
+    tags:
+    - debug
+  - name: disable non default repositories
+    yum_repository:
+      name: "{{ item }}"
+      state: absent
+    with_items: "{{ repos.stdout_lines | difference(keeprepos) }}"
+
+
+

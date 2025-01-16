@@ -1,0 +1,16 @@
+---
+- name: use subscriptions manager to register and set up repos
+  hosts: redhat-node-1
+  tasks:
+  - name: register and subscribe
+    redhat_subscription:
+      username: bob@example.com
+      password: verysecretpassword
+      state: present
+  - name: configure repo access
+    rhsm_repository:
+      name:
+      - rh-gluster-3-client-for-rhel-8-x86_64-rpms
+      - rhel-8-for-x86_64-appstream-debug-rpms
+      state: present
+

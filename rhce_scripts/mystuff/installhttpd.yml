@@ -1,0 +1,12 @@
+---
+- hosts: all
+  tasks:
+  - name: install package
+    package:
+      name: httpd
+      state: installed
+  - name: start and enable httpd
+    service:
+      name: httpd
+      state: started
+      enabled: yes

@@ -1,0 +1,29 @@
+
+---
+- name: simple block example
+  hosts: all
+  tasks:
+  - name: show distro
+    debug:
+      msg: "My distro is {{ ansible_distribution }} "
+  - name: setting up http 
+    block:
+    - name: installing http
+      yum:
+        name: httpd
+        state: present
+    - name: restart httpd
+      service:
+        name: httpd
+        state: started
+    when: ansible_distribution in ["CentOS","Rocky","RedHat"]
+    rescue:
+    - name: Show text for sorry
+      debug:
+        msg: "Your block had some errors. Sorry."
+    always:
+    - name: run always
+      debug:
+        msg: "This is printed whatever there is"
+
+

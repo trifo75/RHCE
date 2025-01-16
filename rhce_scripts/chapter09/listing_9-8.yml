@@ -1,0 +1,39 @@
+---
+- name: testing SELinux system role
+  hosts: client3
+  vars:
+    selinux_policy: targeted
+    selinux_state: enforcing
+    selinux_fcontexts:
+    - { target: '/web(/.*)?', setype: 'httpd_sys_content_t', ftype: 'd' }
+    selinux_restore_dirs:
+    - /web
+
+  tasks:
+  - name: create the directory
+    file:
+      name: /web
+      state: directory
+  - name: execute role and catch errors
+    block:
+    - include_role:
+        name: rhel-system-roles.selinux
+    rescue:
+    - name: handle errors
+      fail:
+        msg: "Role failed"
+      when: not selinux_reboot_required
+    - name: restart managed host
+      shell: sleep 2 && shutdown -r now "Ansible updates triggered reboot"
+      async: 1
+      poll: 0
+      ignore_errors: true
+    - name: wait for managed host to come back
+      wait_for_connection:
+        delay: 10
+        timeout: 300
+
+    - name: reapply selinux role
+      include_role:
+        name: rhel-system-roles.selinux
+

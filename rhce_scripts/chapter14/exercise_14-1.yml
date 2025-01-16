@@ -1,0 +1,15 @@
+---
+- name: set default boot target and reboot
+  hosts: client2
+  tasks:
+  - name: set default boot target
+    file:
+      src: /usr/lib/systemd/system/multi-user.target
+      dest: /etc/systemd/system/default.target
+      state: link
+  - name: reboot after setting target
+    reboot:
+      msg: reboot initiated by Ansible
+  - name: Show a message to see the host is back
+    debug:
+      msg: "The host is back"

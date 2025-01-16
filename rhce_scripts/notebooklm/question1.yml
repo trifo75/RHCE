@@ -1,0 +1,78 @@
+---
+- name: remove all webserver software
+  hosts: client3
+  tasks:
+  - name: remove listed packages
+    yum:
+      name:
+      - httpd
+      - nginx
+      state: absent
+
+
+- name: Question 1 by NotebookLM
+  hosts: client3
+  vars:
+    web_pkg: httpd
+    web_service: httpd
+    web_proto: http
+    webroot: /var/www/mysite
+    webservers_to_check:
+    - httpd
+    - nginx
+    - apache
+    - lighthttpd:wq
+
+  tasks:
+  - name: "install webserver package: {{ web_pkg }}"
+    yum:
+      name: "{{ web_pkg }}"
+      state: latest
+  - name: "start and enable webserver service: {{ web_service }}"
+    service:
+      name: "{{ web_service }}"
+      state: started
+      enabled: true
+  - name: "open firewall for protocol: {{ web_proto }}"
+    firewalld:
+      service: "{{ web_proto}}"
+      state: enabled
+      immediate: true
+      permanent: true
+  - name: "create webroot dir: {{ webroot }}"
+    file:
+      name: "{{ webroot }}"
+      state: directory
+  - name: set selinux properties for webroot
+    sefcontext:
+      target: '{{ webroot }}(/.*)?'
+      setype: httpd_sys_content_t
+      state: present
+  - name: call restorecon on webroot
+    command: restorecon -irv {{ webroot }}
+  - name: configure {{ webroot }} as DocumentRoot
+    lineinfile:
+      path: /etc/httpd/conf/httpd.conf
+      regexp: '^DocumentRoot'
+      line: 'DocumentRoot {{ webroot }}'
+      state: present
+    notify: restart webserver
+  - name: configure {{ webroot }} as a directory
+    lineinfile:
+      path: /etc/httpd/conf/httpd.conf
+      regexp: '^<Directory'
+      line: '<Directory {{ webroot }}>'
+      state: present
+    notify: restart webserver
+  - name: put a file for testing purposes
+    copy:
+      content: |
+        You have successfully set up {{ webroot }} as the DocumentRoot in the {{ web_pkg }} webserver software.
+      dest: "{{ webroot }}/index.html"
+
+
+  handlers:
+  - name: restart webserver
+    service:
+      name: "{{ web_service }}"
+      state: restarted 

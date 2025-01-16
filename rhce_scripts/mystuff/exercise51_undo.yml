@@ -1,0 +1,16 @@
+---
+- name: install and start the vsftpd service
+  hosts: all
+  tasks:
+  - name: stop and disable vsftpd
+    service:
+      name: 
+      - vsftpd
+      - nmap
+      state: stopped
+      enabled: no
+  - name: uninstall vsftpd
+    package:
+      name: vsftpd
+      state: absent
+

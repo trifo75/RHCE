@@ -1,0 +1,23 @@
+---
+- name: configuring sudo using template
+  hosts: client2
+  vars_files:
+    - vars/sudo
+    - vars/users
+  tasks:
+  - name: create groups
+    group:
+      name: "{{ item.name }}"
+    loop: "{{ sudo_groups }}"
+  - name: create users
+    user:
+      name: "{{ item.username }}"
+      groups: "{{ item.groups }}"
+    loop: "{{ users }}"
+  - name: set up sudo config for allowed groups
+    template:
+      src: listing_13-3_sudotemplate.j2
+      dest: /etc/sudoers.d/sudogroups
+      validate: 'visudo -cf %s'
+      mode: 0440
+

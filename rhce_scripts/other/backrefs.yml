@@ -1,0 +1,42 @@
+
+# testing backrefs: option
+---
+- name: testing backrefs option
+  hosts: localhost
+  vars:
+    text: |
+      Elso sor szoveg
+      masodik sor szoveg
+      ez meg valami mas
+      kilenc sor es harom bor
+    file: /tmp/regextext.txt
+  tasks:
+  - name: create test file for replace
+    copy:
+      content: '{{ text }}'
+      dest: /tmp/regextest_replace.txt
+  - name: !unsafe testing \1 format with replace module
+    replace:
+      regexp: '^(\w+)\s+(sor)'
+      replace: '\2 to \1'
+      path: /tmp/regextest_replace.txt
+
+  - name: create test file for lineinfile
+    copy:
+      content: '{{ text }}'
+      dest: /tmp/regextest_lineinfile.txt
+  - name: !unsafe testing \1 format with lineinfile module
+    lineinfile:
+      regexp: '^(\w+)\s+(sor)'
+      line: '\2 to \1'
+      path: /tmp/regextest_lineinfile.txt
+      backrefs: yes
+
+
+  - name: show contents
+    command: cat {{ file }}
+
+      #  - name: remove test file
+      #    file:
+      #      name: "{{ file }}"
+      #      state: absent

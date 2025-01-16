@@ -1,0 +1,16 @@
+
+---
+- name: prepare env by creating testfile
+  hosts: localhost
+  become: no
+  tasks:
+  - name: recreate testfile
+    copy:
+      dest: "{{ playbook_dir }}/testfile1"
+      content: |
+        line1
+        dots3
+        stripes2
+
+
+

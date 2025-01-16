@@ -1,0 +1,15 @@
+
+---
+- name: show list and dict type vars
+  hosts: client1
+  vars_files:
+  - vars/userdefs
+  tasks:
+  - name: print dict values
+    debug:
+      msg: "User {{ users_dict.linda.username }} has home directory {{ users_dict.linda.homedir }} and shell {{ users_dict.linda.shell }}"
+
+  - name: print dict values referenced by square bracket notation
+    debug:
+      msg: "User {{ users_dict['linda']['username'] }} has home directory {{ users_dict['linda']['homedir'] }} and shell {{ users_dict['linda']['shell'] }}"
+

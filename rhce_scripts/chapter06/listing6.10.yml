@@ -1,0 +1,14 @@
+
+---
+- name: "define variables in vars: section"
+  hosts: all
+  vars:
+    ftp_package: vsftpd
+  tasks:
+  - name: install package
+    yum:
+      name: "{{ ftp_package }}"
+      state: latest
+
+
+

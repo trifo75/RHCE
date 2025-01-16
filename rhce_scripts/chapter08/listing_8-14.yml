@@ -1,0 +1,28 @@
+
+---
+- name: Installing a file from template
+  hosts: client1
+  tasks:
+  - name: install httpd
+    yum:
+      name: httpd
+      state: latest
+  - name: start and enable httpd
+    service:
+      name: httpd
+      state: started
+      enabled: true
+  - name: install vhost config from template
+    template:
+      src: listing_8-13.j2
+      dest: /etc/httpd/conf.d/vhost.conf
+      owner: root
+      group: root
+      mode: 0664
+    notify: restart httpd
+  handlers:
+  - name: restart httpd
+    service:
+      name: httpd
+      state: restarted
+

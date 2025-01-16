@@ -1,0 +1,14 @@
+---
+- name: install nginx and postgre after removing httpd and mysql
+  hosts: client3
+  roles:
+  - geerlingguy.nginx
+  - geerlingguy.postgresql
+  pre_tasks:
+  - name: make sure httpd and mysql not installed
+    yum:
+      name:
+      - mysql
+      - httpd
+      state: absent
+

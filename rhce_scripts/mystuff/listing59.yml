@@ -1,0 +1,37 @@
+---
+- name: install, start and enable httpd
+  hosts: all
+  tasks:
+    - name: install it
+      package:
+        name: httpd
+        state: latest
+    - name: start and enable
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+    - name: start and enable firewalld
+      service:
+        name: firewalld
+        state: started
+        enabled: yes
+    - name: enable httpd on firewall
+      firewalld:
+        service: http
+        permanent: true
+        state: enabled
+        immediate: yes
+    - name: create a welcome page
+      copy:
+        content: "Hi there, this webserver seems working!"
+        dest: /var/www/html/index.html
+- name: test connectivity
+  hosts: localhost
+  become: no
+  tasks:
+    - name: test httpd accessibility
+      uri:
+        url: http://client1
+        return_content: yes
+        status_code: 200

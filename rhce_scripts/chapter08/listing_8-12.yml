@@ -1,0 +1,27 @@
+
+---
+- name: enabling SELinux and a boolean 
+  hosts: client1
+  vars:
+    myboolean: httpd_read_user_content
+  tasks:
+  - name: enabling SELinux
+    selinux:
+      state: enforcing
+      policy: targeted
+    register: selinux_out
+  - name: Show out
+    debug:
+      msg: "Should I reboot host? - {{ selinux_out['reboot_required'] }}"
+  - name: Get current status of {{ myboolean }}
+    shell: getsebool {{ myboolean }}
+    register: bool_stat
+  - name: show boolean status
+    debug:
+      msg: Current status of {{ myboolean }} is {{ bool_stat['stdout'] }}
+  - name: Set boolean {{ myboolean }}
+    seboolean:
+      name: "{{ myboolean }}"
+      state: on
+      persistent: yes
+    

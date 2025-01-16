@@ -1,0 +1,71 @@
+
+---
+- name: test jinja in blocks
+  hosts: localhost
+  vars:
+    myname: Trifo
+    myitems:
+    - alma
+    - korte
+    - barack
+    mytext: |
+      Ez egy minta szoveg, amiben {{ myname }} cuccait listazzuk
+      {% for cucc in myitems %}
+      Van itt pl egy {{ cucc }}
+      {% endfor %}
+
+  tasks:
+  - debug:
+      var: mytext
+  - copy:
+      content: "{{ mytext }}"
+      dest: out.txt
+
+
+- name: jinja block tavoli hoston, ansible_facts hasznalattal
+  hosts: client2
+  vars:
+    fact_out: |
+      Ide toljuk ki az ansible factokat JSON formaban
+      {{ ansible_facts | to_json }}
+
+      Es ugyanez szebb formaban:
+      {{ ansible_facts | to_nice_json }}
+
+      Aztan ugyanaz YAML formaban
+      {{ ansible_facts | to_yaml }}
+  tasks:
+  - name: create file from inline template
+    copy:
+      content: "{{ fact_out }}"
+      dest: /tmp/factsheet.txt
+  - name: get generated file back
+    fetch:
+      src: /tmp/factsheet.txt
+      dest: "{{ inventory_hostname }}_factsheet.txt"
+      flat: yes
+      
+- name: for ciklusban valtozo metodusai
+  hosts: localhost
+  vars:
+    lista:
+    - elso
+    - masodik
+    - harmadik
+    - negyedik
+    - otodik
+    - hatodik
+    - hetedik
+    szoveg: |
+      {% for bigyo in lista %}
+      {{ loop.index }}. menet a ciklusban: {{ bigyo }} {{ loop.cycle('pitty','putty') }} {% if loop.first %} ez az elso {% endif %} {% if loop.last %} ez az utolso {% endif %}
+      {% endfor %}
+  tasks:
+  - name: put to file
+    copy:
+      content: "{{ szoveg }}"
+      dest: forciklus.txt
+  - name: print hostvars
+    debug:
+      var: hostvars
+

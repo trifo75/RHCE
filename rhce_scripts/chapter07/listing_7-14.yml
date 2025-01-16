@@ -1,0 +1,15 @@
+---
+- name: combining LOOP and WHEN
+  hosts: all
+  tasks:
+  - name: show properties of a filesystem
+    debug:
+      var: item
+    loop: "{{ ansible_facts['mounts'] }}"
+    when: item.mount == "/boot"
+  - name: update kernel is sufficient space is available in /boot
+    package:
+      name: kernel
+      state: latest
+    loop: "{{ ansible_facts['mounts'] }}"
+    when: item.mount == "/boot" and item.size_available >2000000000

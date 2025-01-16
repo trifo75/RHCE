@@ -1,0 +1,24 @@
+---
+- name: cron module demo
+  hosts: client1
+  tasks:
+  - name: create a cron job entry
+    cron:
+      name: "run a command"
+      hour: "4,19"
+      minute: "5"
+      job: "echo `whoami` `date` > /tmp/whoamidate.txt"
+      user: vagrant
+      state: absent
+    register: cronjob
+  - name: show result
+    debug:
+      var: cronjob
+
+  - name: resister a task to special time
+    cron:
+      name: "mindenora"
+      job: "date > /tmp/lastdate.txt"
+      special_time: hourly
+
+

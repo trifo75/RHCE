@@ -1,0 +1,23 @@
+---
+- name: collect info
+  hosts: all
+  tasks:
+  - name: run command and register
+    shell: 'echo my hostname is `hostname` ; echo plusz egy sor'
+    register: commandoutput
+
+- name: show collected info locally using template loop
+  hosts: localhost
+  tasks:
+  - name: format output
+    debug:
+      msg: |
+        {% for host in groups['all'] %}
+        {{ host }}: {{ hostvars[host]['commandoutput']['stdout'] }}
+        {% endfor %}
+  - name: put collected output into local file
+    lineinfile:
+      name: my_nice_output.txt
+      create: yes
+      line: "{{ item }}: {{ hostvars[item]['commandoutput']['stdout'] }}"
+    loop: "{{ groups['all'] }}"

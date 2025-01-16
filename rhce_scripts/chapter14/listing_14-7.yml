@@ -1,0 +1,12 @@
+---
+- name: reboot all hosts
+  hosts: all
+  gather_facts: no
+  tasks:
+  - name: reboot hosts
+    reboot:
+      msg: "Reboot initiated by Ansible"
+      test_command: whoami
+  - name: The playbook continues as the host is back
+    debug:
+      msg: successfully rebooted

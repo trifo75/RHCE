@@ -1,0 +1,33 @@
+---
+- name: |
+    .
+    convert string lists with comma separated elements to flat list
+    like ['one', 'two,three', 'four'] to ['one', 'two', 'three', 'four']
+    .
+  hosts: localhost
+  gather_facts: no
+  vars:
+    not_flat_list:
+    - one
+    - two,three
+    - four,five,six
+    - seven
+    flattened_list: "{{ not_flat_list | map('split', ',') | flatten }}"
+    list_of_dicts:
+    - { username: 'joe',  groups: 'admin' }
+    - { username: 'marv', groups: 'students' }
+    - { username: 'klip', groups: 'account,students' }
+    - { username: 'huey', groups: 'dba' }
+    - { username: 'kip',  groups: 'admin,dba' }
+    - { username: 'rose', groups: 'devs,dba' }
+    extraction_of_groups: "{{ list_of_dicts | map(attribute='groups') | list }}"
+    list_of_individual_groups: "{{ extraction_of_groups | map('split', ',') | flatten | unique }}"
+  tasks:
+  - name: show flattened list
+    debug:
+      msg: "{{ flattened_list }}"
+  - name: show list of groups wxtracted from the list_of_dicts variable
+    debug:
+      msg: "create group \"{{ item }}\""
+    loop: "{{ list_of_individual_groups }}"
+

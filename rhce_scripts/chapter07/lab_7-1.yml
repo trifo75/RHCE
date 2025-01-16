@@ -1,0 +1,55 @@
+
+---
+- name: check initial conditions
+  hosts: client2
+  tasks:
+  - name: Fail if requirements are not met
+    fail:
+      msg: "Host {{ ansible_hostname }} does not meet minimal requirements"
+    when: not (( ansible_distribution in ["Rocky","CentOS","RedHat"] ) and (  ansible_distribution_major_version | int >=8 ))
+
+
+- name: create index.html on control node
+  hosts: localhost
+  tasks:
+  - name: create index.html locally
+    copy:
+      content: "welcome to my webserver"
+      dest: /tmp/index.html
+
+
+- name: install httpd and mod_ssl on client2
+  hosts: client2
+  vars_files: vars/lab_7-1.vars  # packages
+  tasks:
+    - name: install packages
+      yum:
+        name: "{{ packages }}"
+        state: latest
+
+    - name: start and enable httpd
+      service:
+        name: httpd
+        state: started
+        enabled: true
+
+    - name: enable http and https traffic on firewall
+      firewalld:
+        service: "{{ item }}"
+        permanent: true
+        state: enabled
+      loop:
+      - http
+      - https
+    - name: copy index.html
+      copy:
+        src: /tmp/index.html
+        dest: /var/www/html/index.html
+      notify: restart_webserver
+  handlers:
+    - name: restart_webserver
+      service:
+        name: httpd
+        state: restarted
+
+

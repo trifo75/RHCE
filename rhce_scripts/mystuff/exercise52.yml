@@ -1,0 +1,21 @@
+---
+- name: copy multiline text
+  hosts: client1
+  tasks:
+  - name: copy multiline text with keeping formatting
+    copy:
+      content: |
+        first line
+        second line
+           keeping formating
+      dest: /tmp/multiline_keepformat.txt
+  - name: single line output broken to multiple lines in source
+    copy:
+      content: >
+        first line
+        second line
+        will be single line
+      dest: /tmp/multiline_concat.txt
+
+
+

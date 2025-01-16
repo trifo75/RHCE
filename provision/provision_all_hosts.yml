@@ -1,0 +1,54 @@
+---
+- name: provisioning all hosts by Vagrant ansible-local
+  become: true
+  hosts: all
+  tasks:
+  - name: set root password to password
+    user:
+      name: root
+      password: "{{ 'password' | password_hash }}"
+      update_password: always
+  - name: create ansible user
+    user:
+      name: ansible
+      uid: 5000
+      comment: "Ansible technical user"
+      shell: "/bin/bash"
+      password: "{{ 'password' | password_hash }}"
+      state: present
+  - name: create sudoers file for ansible user
+    copy:
+      content: "ansible ALL=(ALL) NOPASSWD: ALL"
+      dest: /etc/sudoers.d/ansible
+      mode: "0440"
+  - name: create ~ansible/.ssh dir
+    file:
+      path: "~ansible/.ssh"
+      state: directory
+      owner: ansible
+      group: ansible
+      mode: "0700"
+  - name: populate ~ansible/.ssh dir
+    copy:
+      src: "ansible_ssh/{{ item.name }}"
+      dest: "~ansible/.ssh/{{ item.name }}"
+      owner: ansible
+      group: ansible
+      mode: "{{ item.mode }}"
+    with_items:
+    - { name: "id_rsa"          , mode: "0400" }
+    - { name: "id_rsa.pub"      , mode: "0440" }
+    - { name: "authorized_keys" , mode: "0400" }
+  - name: edit sshd_config to enable password authentication
+    replace:
+      path: /etc/ssh/sshd_config
+      regexp: '(.*)(PasswordAuthentication +no)(.*)'
+      replace: '\1PasswordAuthentication yes\3'
+  - name: restart sshd service
+    service:
+      name: sshd
+      state: restarted
+
+
+
+

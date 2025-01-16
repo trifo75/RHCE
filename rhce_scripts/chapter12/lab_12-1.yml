@@ -1,0 +1,61 @@
+---
+- name: Lab 12-1, configuring repo server
+  hosts: localhost
+  vars:
+    pkgname: nginx
+    repodir: /nginxrepo
+  tasks:
+  - name: make sure apache and createrepo packages are installed
+    yum:
+      name:
+      - httpd
+      - createrepo_c
+      state: installed
+    notify: restart httpd
+  - name: "create repo directory: {{ repodir }}"
+    file:
+      path: "{{ repodir }}"
+      state: directory
+  - name: set selinux properties for {{ repodir }}
+    sefcontext:
+      target: "{{ repodir }}(/.*)?"
+      state: present
+      setype: httpd_sys_content_t
+  - name: running restorecon
+    command: restorecon -rv {{ repodir }}
+  - name: enable service on the firewall
+    firewalld:
+      service: http
+      state: enabled
+      immediate: true
+      permanent: true
+  - name: "populate {{ repodir }} with {{ pkgname }} packages"
+    yum:
+      name: '{{ pkgname }}*'
+      download_dir: "{{ repodir }}"
+      download_only: true
+      state: latest
+  - name: "generate repo metadata in {{ repodir }}"
+    command: createrepo {{ repodir }}
+  - name: set apache documentroot to {{ repodir }}
+    lineinfile:
+      regex: '^DocumentRoot'
+      line: 'DocumentRoot {{ repodir }}'
+      state: present
+      path: /etc/httpd/conf/httpd.conf
+    notify: restart httpd
+  - name: configure directory access
+    blockinfile:
+      block: |
+        <Directory {{ repodir }}>
+            AllowOverride none
+            Require all granted
+        </Directory>
+      path: /etc/httpd/conf/httpd.conf
+    notify: restart httpd
+
+  handlers:
+  - name: restart httpd
+    service:
+      name: httpd
+      state: restarted

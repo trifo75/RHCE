@@ -1,0 +1,12 @@
+---
+# defaults file for writeafile
+file_author: "Default Joe"
+file_content: |
+  This is the default content
+
+  Authored by: {{ file_author }}
+file_path: /tmp/default_file
+file_mode: 0644
+file_owner: root
+file_group: root
+

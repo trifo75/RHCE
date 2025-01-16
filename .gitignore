@@ -1,1 +1,4 @@
 .vagrant/
+ansible/try/
+_delete/
+_backup/

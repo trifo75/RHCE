@@ -1,0 +1,10 @@
+
+---
+- name: generating hosts file with jinja template
+  hosts: all
+  tasks:
+  - name: create the hosts file
+    template:
+      dest: /tmp/hosts
+      src: lab_8-1.j2
+

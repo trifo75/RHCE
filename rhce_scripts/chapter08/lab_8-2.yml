@@ -1,0 +1,66 @@
+
+---
+- name: install ftp client locally for testing
+  hosts: localhost
+  tasks:
+    - name: do
+      yum:
+        name: ftp
+        state: latest
+
+
+- name: install and config vsftpd
+  hosts: all
+  vars:
+    anonymous_enable: "YES"
+    local_enable: "YES"
+    write_enable: "YES"
+    anon_upload_enable: "YES"
+  tasks:
+  - name: make sure vsftpd is installed
+    yum:
+      name: vsftpd
+      state: latest
+  - name: apply custom config from template
+    template:
+      src: vsftpd.j2
+      dest: /etc/vsftpd/vsftpd.conf
+    notify: restart vsftpd
+  - name: start and enable service
+    service:
+      name: vsftpd
+      state: started
+      enabled: true
+  - name: allow ftp on firewall
+    firewalld:
+      service: ftp
+      state: enabled
+      immediate: true
+      permanent: true
+  - name: "customize ftp dir for anon_write: set permission to 777"
+    file:
+      name: /var/ftp/pub
+      state: directory
+      mode: "0777"
+    notify: restart vsftpd
+  - name: "customize ftp dir for anon_write: set public_content_rw_t on dir"
+    sefcontext:
+      target: '/var/ftp/pub(/.*)?'
+      setype: public_content_rw_t
+      state: present
+  - name: run restorecon
+    command: restorecon -rv /var/ftp/pub
+    notify: restart vsftpd
+  - name: "customize ftp dir for anon_write: set ftpd_anon_write boolean"
+    seboolean:
+      name: ftpd_anon_write
+      persistent: true
+      state: on
+    notify: restart vsftpd
+  handlers:
+  - name: restart vsftpd
+    service:
+      name: vsftpd
+      state: restarted
+
+

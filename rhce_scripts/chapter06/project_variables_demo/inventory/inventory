@@ -1,0 +1,9 @@
+
+[dbservers]
+client1
+client2
+
+[appservers]
+client2
+client3
+

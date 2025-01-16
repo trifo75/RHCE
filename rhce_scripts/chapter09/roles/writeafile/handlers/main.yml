@@ -1,0 +1,5 @@
+---
+# handlers file for writeafile
+- name: create file checksum
+  shell: "md5sum {{ file_path }} > {{ file_path }}.md5"
+

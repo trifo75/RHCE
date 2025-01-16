@@ -1,0 +1,30 @@
+
+---
+- name: show fact gathering
+  hosts: client1
+  tasks:
+    - name: show some facts - old dot notation as var
+      debug:
+        var: ansible_facts.default_ipv4.address
+
+    - name: show some facts - old dot notation as message
+      debug:
+        var: "{{ ansible_facts.default_ipv4.address }}"
+
+    - name: show some facts - new Python notation as var
+      debug:
+        var: ansible_facts['default_ipv4']['address']
+
+    - name: show some facts - new Python notation as message
+      debug:
+        var: "{{ ansible_facts['default_ipv4']['address'] }}"
+
+    - name: show some facts - new Python notation as var
+      debug:
+        var: ansible_facts['default_ipv4']['address']
+
+
+    - name: show disk sizes
+      debug:
+        var: ansible_facts['devices']['sda']['partitions']['sda1']['size']
+

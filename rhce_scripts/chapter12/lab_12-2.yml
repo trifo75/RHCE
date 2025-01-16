@@ -1,0 +1,42 @@
+---
+- name: add repo to clients
+  hosts: all
+  tasks:
+  - name: delete all webserver packages except nginx
+    yum:
+      name:
+      - httpd
+      - lighthttpd
+      - apache
+      state: absent
+    tags:
+    - never
+  - name: force remove nginx
+    yum:
+      name: nginx
+      state: absent
+    tags:
+    - forceremove_nginx 
+  - name: create custom repo 
+    yum_repository:
+      name: nginx_custom
+      description: Custom repository for nginx packages
+      baseurl: http://manager/
+      gpgcheck: no
+      enabled: yes
+  - name: install nginx fom the new repo
+    yum:
+      name: nginx
+      state: latest
+      enablerepo: nginx_custom
+  - name: gather package facts
+    package_facts:
+  - name: show info on installed nginx package
+    debug:
+      msg: >
+        The installed version of {{ item.name }} package is {{ item.version }} 
+    with_items: "{{ ansible_facts.packages['nginx'] }}"
+
+
+
+

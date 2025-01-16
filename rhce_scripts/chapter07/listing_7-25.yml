@@ -1,0 +1,20 @@
+
+# Using fail: module
+# 
+---
+- name: demonstrating failed_when
+  hosts: all
+  ignore_errors: yes    # moved to play level
+  tasks:
+  - name: run a script
+    command: echo hello world
+    register: command_result
+    #failed_when: "'world' in command_result.stdout"
+  - name: report a failure
+    fail:
+      msg: the command has failed
+    when: "'world' in command_result.stdout"
+  - name: see if we get here
+    debug:
+      msg: second task executed
+

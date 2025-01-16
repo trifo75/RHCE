@@ -1,0 +1,7 @@
+# to be included
+- name: copy a file
+  copy:
+    content: |
+      Welcome to my fancy FTP service
+    dest: /var/ftp/pub/README
+

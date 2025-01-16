@@ -1,0 +1,20 @@
+---
+- name: setup a service and demo includes and imports
+  hosts: client2
+  tasks:
+  - name: include the services tasks file
+    include_tasks: listing_10-7.yml
+    vars:
+      package: httpd
+      service: httpd
+    when: ansible_facts['os_family'] == 'RedHat'
+  - name: import the firewall setup tasks
+    import_tasks: listing_10-8.yml
+    vars:
+      firewall_package: firewalld
+      firewall_service: firewalld
+      firewall_rules:
+      - http
+      - https
+
+

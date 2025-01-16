@@ -1,0 +1,30 @@
+---
+- name: playing with conditionals
+  vars:
+    myvalue: 13
+    mybool: True
+    mystring: "nice string"
+  gather_facts: false
+  hosts: localhost
+  tasks:
+  - name: A bool is true
+    debug:
+      msg: "Show this message"
+    when: mybool
+  - name: A bool is not true
+    debug:
+      msg: "Show this message"
+    when: not mybool
+  - name: a variable is defined
+    debug:
+      msg: "Show this message"
+    when: myvalue is defined
+  - name: a variable is NOT defined
+    debug:
+      msg: "Show this message"
+    when: fakevar is not defined
+  - name: a variable is part of a list or other set
+    debug:
+      msg: "Show this message"
+    when: myvalue in [1,3,5,7,9,13]
+

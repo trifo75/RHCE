@@ -1,0 +1,28 @@
+
+
+---
+- name: Install cusom facts
+  hosts: all
+  vars:
+    remote_dir: /etc/ansible/facts.d
+    facts_file: listing68.fact
+  tasks:
+    - name: create remote directory
+      file:
+        state: directory
+        recurse: yes
+        path: "{{ remote_dir }}"
+    - name: "deploy facts file: {{ remote_dir }}/{{ facts_file }}"
+      copy:
+        src: "{{ facts_file }}"
+        dest: "{{ remote_dir }}"
+
+
+- name: Check custom facts
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: Diplay deployed facts
+      debug:
+        var: ansible_facts['ansible_local']
+

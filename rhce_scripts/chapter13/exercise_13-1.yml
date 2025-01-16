@@ -1,0 +1,23 @@
+---
+- name: create user accounts
+  hosts: client1
+  tasks:
+  - name: create groups - creating a flat list from groups attribute of users dict
+    group:
+      name: "{{ item.groups | map('split', ',') | flatten }}"
+      state: present
+    loop: "{{ users | map(attribute='groups') | list | map('split', ',') | flatten | unique }}"
+  - name: create users
+    user:
+      name: "{{ item.username }}"
+      groups: "{{ item. group }}"
+    loop: "{{ users }}"
+  - name: allow group members in sudo
+    template:
+      src: exercise_13-1_sudotemplate.j2
+      dest: /etc/sudoers/sudogroups_13-1
+      validate: 'visudo -cf %1'
+      mode: 0440
+    loop: "{{ users }}"
+
+

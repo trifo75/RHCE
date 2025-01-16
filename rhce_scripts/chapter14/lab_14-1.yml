@@ -1,0 +1,32 @@
+# Lab14-1
+# servers should reboot at 2am (cron)
+# afrer reboot log a message: "CRON initiated reboot just completed"
+# set default target to multi-user.target
+# service facts - show current version of cron process
+---
+- name: Lab 14-1
+  hosts: client3
+  tasks:
+  - name: create cron entry to reboot server at 2am
+    cron:
+      name: "daily reboot"
+      job: reboot
+      hour: 2
+      minute: 0
+  - name: Put errlog entry affer successful reboot
+    cron:
+      name: "log successful reboot"
+      special_time: reboot
+      job: "logger CRON initiated reboot just completed"
+  - name: set default systemd target to multi-user
+    file:
+      dest: /etc/systemd/system/default.target
+      src: /usr/lib/systemd/system/multi-user.target
+      state: link
+  - name: collect service facts
+    service_facts:
+  - name: show crond service facts
+    debug:
+      msg: "{{ ansible_facts.services['crond.service'] | to_nice_yaml }}"
+
+

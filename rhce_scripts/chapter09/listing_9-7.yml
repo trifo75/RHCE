@@ -1,0 +1,18 @@
+# Pelda konfigok selinuy system role hasznalatahoz
+---
+- name: testing SELinux system role
+  vars:
+    selinux_policy: targeted
+    selinux_state: enforcing
+    selinux_booleans:
+    - { name: 'samba_enable_home_dirs', state: 'on' }
+    - { name: 'ssh_sysadm_login', state: 'on', persistent: 'yes' }
+    selinux_fcontexts:
+    - { target: '/tmp/test_dir(/.*)?', setype: 'user_home_dir_t', ftype: 'd' }
+    selinux_restore_dirs:
+    - /tmp/test_dir
+    selinux_ports:
+    - { ports: '22100', proto: 'tcp', setype: 'ssh_port_t', state: present }
+    selinux_logins:
+    - { login: 'sar-user', seuser: 'staff_u', serange: 's0-s0:c0.c1023', state: 'present' }
+

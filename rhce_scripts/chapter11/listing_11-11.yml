@@ -1,0 +1,21 @@
+---
+- name: testing assert module
+  hosts: localhost
+  become: no
+  gather_facts: no
+  vars_prompt:
+  - name: filesize
+    prompt: "Specify a file size in megabytes"
+    private: no
+  tasks:
+  - name: check if file size is valid
+    assert:
+      that:
+      - ( filesize | int ) <= 100 
+      - ( filesize | int ) >= 1 
+      fail_msg: "file size must be between 1 and 100"
+      success_msg: "file size is good, lets continue"
+  - name: create a file in size of {{ filesize }}MB
+    command: dd if=/dev/zero of=bigile bs=1M count={{ filesize }}
+
+

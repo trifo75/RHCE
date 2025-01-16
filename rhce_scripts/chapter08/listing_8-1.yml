@@ -1,0 +1,15 @@
+
+---
+- name: stat module tests
+  hosts: client1
+  tasks:
+  - stat:
+      path: /etc/hosts
+    register: st
+  - name: show current values
+    debug: 
+      msg: |
+        current value of the st variable is
+        {{ st }}
+
+

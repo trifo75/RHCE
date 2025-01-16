@@ -1,0 +1,12 @@
+---
+- name: integer conditionals
+  hosts: all
+  tasks:
+  - name: show free mem
+    debug:
+      var: ansible_facts['memory_mb']['real']['free']
+  - name: install vsftpd im sufficient memory is available
+    package:
+      name: vsftpd
+      state: latest
+    when: ansible_facts['memory_mb']['real']['free'] > 130

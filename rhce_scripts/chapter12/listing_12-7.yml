@@ -1,0 +1,39 @@
+---
+- name: |
+    install FTP to export a custom repository and
+    then download software packages to it
+  hosts: localhost
+  tasks:
+  - name: install FTP server and createrepo utility
+    yum:
+      name:
+      - vsftpd
+      - createrepo_c
+      state: latest
+  - name: start and enable FTP daemon
+    service:
+      name: vsftpd
+      state: started
+      enabled: true
+  - name: open firewall for ftpd
+    firewalld:
+      service: ftp
+      permanent: true
+      state: enabled
+
+- name: set up repo directory
+  hosts: localhost
+  tasks:
+  - name: make directory
+    file:
+      path: /var/ftp/repo
+      state: directory
+  - name: download packages
+    yum:
+      name: nmap
+      download_only: true
+      download_dir: /var/ftp/repo
+  - name: create repo
+    command: createrepo /var/ftp/repo
+
+

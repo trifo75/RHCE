@@ -1,0 +1,13 @@
+---
+- name: using systemd module to manage service
+  hosts: client1
+  tasks:
+  - name: enable httpd and make sure it is not masked  
+    systemd:
+      name: nginx
+      enabled: yes
+      state: started
+      masked: no
+      daemon_reload: yes
+
+

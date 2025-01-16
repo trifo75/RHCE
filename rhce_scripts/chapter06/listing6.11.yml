@@ -1,0 +1,12 @@
+
+---
+- name: Variable include demo
+  hosts: client3
+  vars_files: vars/common
+  tasks:
+  - name: install stuff called {{ my_package }}
+    yum:
+      name: "{{ my_package }}"
+      state: latest
+
+
