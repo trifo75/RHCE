@@ -23,6 +23,7 @@
         fstype: vboxsf
         opts: uid=ansible,gid=ansible,fmode=660,dmode=770,_netdev
         state: mounted
+        boot: true
     - name: create a link in the Ansible user dir to the scripts subfolder
       file:
         src: "/ansiblescripts/rhce_scripts"
