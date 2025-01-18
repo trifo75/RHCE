@@ -26,6 +26,7 @@ Even though I am sure that it should be written to be more consistent and more a
 As far as I know, on the real exam you will have exactly two VM-s, thus it does not really matter.
 **TODO** - a basic, default ansible inventory should be generated for the ansible user
 **TODO** - find a way to create the SSH keys on provision, so GitHub does not complain about the security because of the exposed keys
+**TODO** - 20GB size shoud be set up to the machine's system disk in Vagrantfile. Probably via variable.
 
 ## File structure
 * README.md - this file
