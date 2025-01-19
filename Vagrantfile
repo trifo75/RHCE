@@ -75,6 +75,19 @@ Vagrant.configure("2") do |config|
       machine.vm.provision "shell", name: "Create /etc/hosts file", inline: "sudo echo '#{hosts_content}' > /etc/hosts"
 
 
+      # repair device UUID-s to get rid of warning messages like
+      #    Devices file sys_wwid t10.ATA_VBOX_HARDDISK_VBa64d3d26-8dd3a5f6 PVID bbyAlJIN9bj4rcDjcYVVqMBz72umwe05 last seen on /dev/sda2 not found.
+      # we look for missing UUID-s, delete them and add devices back
+      # the regex is looking for the word after "PVID" in the abowe error message
+      machine.vm.provision "shell", name: "Create /etc/hosts file", inline: <<-SHELL
+        # when there is no "not found" in the output of lvmdevices, we simply exit
+        lvmdevices --check 2>&1 | grep -q "not found" || exit 0
+        # collect problematic UUIDs and delete them
+        lvmdevices --check 2>&1 | sed -E 's/^.*PVID (\S+).*$/\1/g' | xargs -n1 lvmdevices -y --delpvid
+        # re-add missing dev to /etc/lvm/devices/system.devices
+        vgimportdevices -a
+SHELL
+
       ####################################
       # additional host customization goes here
 
