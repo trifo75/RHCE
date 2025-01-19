@@ -85,7 +85,7 @@ Vagrant.configure("2") do |config|
         # collect problematic UUIDs and delete them
         lvmdevices --check 2>&1 | sed -E 's/^.*PVID (\S+).*$/\1/g' | xargs -n1 lvmdevices -y --delpvid
         # re-add missing dev to /etc/lvm/devices/system.devices
-        vgimportdevices -a
+        vgimportdevices -a 
 SHELL
 
       ####################################
